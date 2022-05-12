@@ -4,6 +4,7 @@ using Library.API.Data.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Library.API.Test
@@ -112,12 +113,14 @@ namespace Library.API.Test
 
             // Assert
             Assert.IsType<OkResult>(actionResult);
+            Assert.Equal(4, _service.GetAll().Count());
 
             // Act
             actionResult = _controller.Remove(guid2);
 
             // Assert
             Assert.IsType<NotFoundResult>(actionResult);
+            Assert.Equal(4, _service.GetAll().Count());
 
         }
 
