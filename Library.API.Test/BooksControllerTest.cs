@@ -99,5 +99,27 @@ namespace Library.API.Test
             // Assert
             Assert.IsType<BadRequestObjectResult>(actionResult2);
         }
+        [Theory]
+        [InlineData("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200", "ab2bd817-98cd-4cf3-a80a-53ea0cd9c288")]
+        public void Remove_Test(string id, string id2)
+        {
+            // Arrange
+            var guid1 = new Guid(id);
+            var guid2 = new Guid(id2);
+
+            // Act
+            var actionResult = _controller.Remove(guid1);
+
+            // Assert
+            Assert.IsType<OkResult>(actionResult);
+
+            // Act
+            actionResult = _controller.Remove(guid2);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(actionResult);
+
+        }
+
     }
 }
