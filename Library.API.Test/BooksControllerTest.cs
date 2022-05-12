@@ -39,23 +39,65 @@ namespace Library.API.Test
         [InlineData("ab2bd817-98cd-4cf3-a80a-53ea0cd9c200", "ab2bd817-98cd-4cf3-a80a-53ea0cd9c288")]
         public void GetById_Test(string id, string id2) 
         {
+            // Arrange
+            var guid1 = new Guid(id);
+            var guid2 = new Guid(id2);
+
             // Act
-            var get = _controller.Get(new Guid(id));
+            var actionResult = _controller.Get(guid1);
 
             // Assert
-            Assert.IsType<OkObjectResult>(get.Result);
+            Assert.IsType<OkObjectResult>(actionResult.Result);
 
-            var okResult = get.Result as OkObjectResult;
+            var okResult = actionResult.Result as OkObjectResult;
             Assert.IsType<Book>(okResult.Value);
 
             var book = okResult.Value as Book;
             Assert.Equal(book.Id.ToString(), id);
 
             // Act
-            get = _controller.Get(new Guid(id2));
-            Assert.IsType<NotFoundResult>(get.Result);
+            actionResult = _controller.Get(guid2);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(actionResult.Result);
 
         }
+        [Fact]
+        public void AddBook_Test()
+        {
+            // Arrange
+            var completeBook = new Book() { 
+                Author="Felipe",
+                Description = "Felipe's Book",
+                Title = "Daiellos's Book"
+            };
 
+            var incompleteBook = new Book()
+            {
+                Description = "Felipe's Book"
+            };
+
+            // Act
+            var actionResult1 = _controller.Post(completeBook);
+
+            // Assert
+            Assert.IsType<CreatedAtActionResult>(actionResult1);
+
+            var item = actionResult1 as CreatedAtActionResult;
+            Assert.IsType<Book>(item.Value);
+
+            var book = item.Value as Book;
+            Assert.Equal(completeBook.Author, book.Author);
+            Assert.Equal(completeBook.Title, book.Title);
+            Assert.Equal(completeBook.Description, book.Description);
+
+
+            // Act
+            _controller.ModelState.AddModelError("Title", "Title is required.");
+            var actionResult2 = _controller.Post(incompleteBook);
+
+            // Assert
+            Assert.IsType<BadRequestObjectResult>(actionResult2);
+        }
     }
 }
